@@ -16,7 +16,7 @@ services:
     networks:
       - my_network
     ports:
-      - "8000:8000"
+      - "5000:5000"
     depends_on:
       - elasticsearch
   myapp2:
