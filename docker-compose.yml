@@ -1,0 +1,28 @@
+version: '3.9'
+
+networks:
+  my_network:
+services:
+  elasticsearch:
+    image: 'bitnami/elasticsearch:latest'
+    container_name: elasticsearch
+    networks:
+      - my_network
+    environment:
+      - ELASTICSEARCH_PORT_NUMBER=9201
+  myapp:
+    build: ./app_flask
+    container_name: app_flask
+    networks:
+      - my_network
+    ports:
+      - "8000:8000"
+    depends_on:
+      - elasticsearch
+  myapp2:
+    build: ./app2
+    container_name: app
+    networks:
+      - my_network
+    depends_on:
+      - elasticsearch
