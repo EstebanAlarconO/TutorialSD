@@ -11,16 +11,31 @@ busquedas = ('Trap Card', 'Normal Monster', 'Flip Effect Monster', 'Effect Monst
 ELASTIC_PASSWORD = "EjZC5k4FiUu70FvUYXUHkI1M"
 CLOUD_ID = "Tutorial:dXMtY2VudHJhbDEuZ2NwLmNsb3VkLmVzLmlvJDcwOGUyODI1ODUzODQzNmI5ZjRlMjI1ZGE2MTIxMTQ1JDFhNTA5MjA0NzA5MzRjNDViOGQ5ZmY2ZDMyNTVlZGMz"
 
+'''
 con = Elasticsearch(cloud_id=CLOUD_ID,
                     basic_auth=("elastic", ELASTIC_PASSWORD), 
                     ssl_version=ssl.TLSVersion.TLSv1_2, 
                     verify_certs=False
                     )
 
-if __name__== "__main__":
+'''
+context = ssl.create_default_context(cafile="certs.pem")
+es = Elasticsearch(
+    "https://es01:9200",
+    http_auth=('elastic', ELASTIC_PASSWORD),
+    ssl_context=context,
+)
 
+# Successful response!
+es.info()                    
+
+if __name__== "__main__":
+    
+    '''
     while True:
         carta = random.choice(busquedas)
         resp = con.search(index="cards", query={"match_all": {}})
         print(resp)
         sleep(5)
+    '''
+    

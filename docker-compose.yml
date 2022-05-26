@@ -2,14 +2,21 @@ version: '3.9'
 
 networks:
   my_network:
+    driver: bridge
 services:
-  elasticsearch:
-    image: 'bitnami/elasticsearch:latest'
-    container_name: elasticsearch
+  es01:
+    build: ./elasticsearch
+    container_name: es01
     networks:
       - my_network
+    ports:
+      - 9200:9200
+      - 9300:9300
     environment:
-      - ELASTICSEARCH_PORT_NUMBER=9201
+      - cluster.name=docker-cluster
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - discovery.type=single-node
   myapp:
     build: ./app_flask
     container_name: app_flask
@@ -18,11 +25,11 @@ services:
     ports:
       - "5000:5000"
     depends_on:
-      - elasticsearch
+      - es01
   myapp2:
     build: ./app2
     container_name: app
     networks:
       - my_network
     depends_on:
-      - elasticsearch
+      - es01

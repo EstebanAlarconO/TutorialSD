@@ -1,4 +1,5 @@
-FROM elasticsearch:8.2.1
+FROM bitnami/elasticsearch:8
 
-RUN network create elastic
-RUN -d --name elasticsearch --net elastic -p 9200:9200 elasticsearch:tag
+COPY  . .
+EXPOSE 9200
+
