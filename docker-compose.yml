@@ -1,35 +1,63 @@
-version: '3.9'
-
-networks:
-  my_network:
-    driver: bridge
+version: '3.7'
 services:
   es01:
     build: ./elasticsearch
     container_name: es01
-    networks:
-      - my_network
+    environment:
+      - node.name=es01
+      - cluster.name=docker-cluster
+      - discovery.seed_hosts=es02,es03
+      - cluster.initial_master_nodes=es01,es02,es03
+      - bootstrap.memory_lock=true
+      - xpack.security.enabled=true
+      - ELASTIC_PASSWORD=password
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
     ports:
       - 9200:9200
-      - 9300:9300
+    networks:
+      - elastic
+  es02:
+    build: ./elasticsearch
+    container_name: es02
     environment:
+      - node.name=es02
       - cluster.name=docker-cluster
+      - discovery.seed_hosts=es01,es03
+      - cluster.initial_master_nodes=es01,es02,es03
       - bootstrap.memory_lock=true
+      - xpack.security.enabled=true
+      - ELASTIC_PASSWORD=password  
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-      - discovery.type=single-node
-  myapp:
-    build: ./app_flask
-    container_name: app_flask
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
     networks:
-      - my_network
-    ports:
-      - "5000:5000"
-    depends_on:
-      - es01
-  myapp2:
-    build: ./app2
-    container_name: app
+      - elastic
+  es03:
+    build: ./elasticsearch
+    container_name: es03
+    environment:
+      - node.name=es03
+      - cluster.name=docker-cluster
+      - discovery.seed_hosts=es01,es02
+      - cluster.initial_master_nodes=es01,es02,es03
+      - bootstrap.memory_lock=true
+      - xpack.security.enabled=true
+      - ELASTIC_PASSWORD=password
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
     networks:
-      - my_network
-    depends_on:
-      - es01
+      - elastic
+
+networks:
+  elastic:
+    driver: bridge
