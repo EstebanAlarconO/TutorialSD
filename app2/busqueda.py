@@ -21,6 +21,17 @@ if __name__== "__main__":
 
     while True:
         carta = random.choice(busquedas)
-        resp = con.search(index="cards", query={"match_all": {}})
-        print(resp)
-        sleep(5)
+        query_body = {"size": 10000,
+                        "query": {
+                            "bool": {
+                            "must": [
+                                {"term": {
+                                "Type.keyword": carta
+                                }}
+                            ]
+                            }
+                        }
+                    }
+        resp = con.search(index="cards", body=query_body)
+        valor = [doc['_source'] for doc in resp['hits']['hits']]
+        print(valor[:10])
