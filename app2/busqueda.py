@@ -1,4 +1,4 @@
-from time import sleep
+from time import time, sleep
 from elasticsearch import Elasticsearch
 import ssl
 import random
@@ -33,6 +33,8 @@ if __name__== "__main__":
                             }
                         }
                     }
+        inicio = time()
         resp = con.search(index="cards", body=query_body)
+        final = time()
         valor = [doc['_source'] for doc in resp['hits']['hits']]
-        print(valor[:10])
+        print(valor[:10], final - inicio)
