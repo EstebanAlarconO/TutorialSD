@@ -17,7 +17,8 @@ con = Elasticsearch(cloud_id=CLOUD_ID,
 def index():
     if request.method == 'POST':
         results = request.form['search']
-        query_body = {"size": 10000,
+        results = results.replace(" ", " AND ")
+        '''query_body = {"size": 10000,
                         "query": {
                             "bool": {
                             "must": [
@@ -27,11 +28,19 @@ def index():
                             ]
                             }
                         }
+                    }'''
+        query_body = {"size": 10000,
+                    "query": {
+                        "query_string": {
+                            "query": results,
+                            "fields": ["ATK", "Name"],
+                        }
                     }
+                }
         resp = con.search(index="cards", body=query_body)
         valor = [doc['_source'] for doc in resp['hits']['hits']]
         largo = len(valor)
-        return render_template('index.html', total = largo, values = valor[:10]) 
+        return render_template('index.html', total = largo, values = valor) 
     
     return render_template('index.html')
     
